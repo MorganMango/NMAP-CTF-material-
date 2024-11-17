@@ -1,0 +1,108 @@
+version: '3.8'
+services:
+  box1:
+    container_name: box1
+    image: nginx:alpine
+    hostname: BOXONE
+    ports:
+      - "8000:80"
+    volumes:
+      - /root/src/box1:/usr/share/nginx/html:z
+    networks:
+      vulnerable_net:
+         ipv4_address: 172.30.30.2
+  box2: 
+    container_name: box2
+    image: publicarray/chrony:latest
+    hostname: BOXTWO
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+      - "123:123/udp"
+    volumes:
+      - /root/src/box2:/usr/share/nginx/html:z
+    networks:
+      vulnerable_net:
+         ipv4_address: 172.30.30.123
+
+  box3:
+    container_name: box3
+    image: vulhub/grafana:8.2.6
+    ports:
+      - "8002:80"
+      - "3000:3000"
+    volumes:
+      - /root/src/box2:/usr/share/nginx/html:z
+    networks:
+      vulnerable_net:
+         ipv4_address: 172.30.30.125
+
+  box4:
+    container_name: box4
+    image: my-apache-ssh-image:latest
+    ports:
+      - "8003:80"
+      - "2222:22"
+    volumes:
+      - /root/src/box4:/var/www/html:z
+    networks:
+      vulnerable_net:
+         ipv4_address: 172.30.30.200
+
+  box5: 
+    container_name: box5 
+    image: my-ssh-banner-image 
+    ports:
+      - "2221:22"
+    volumes: 
+      - /root/src/box5/banner.txt:/etc/banner.txt
+    networks:
+      vulnerable_net:
+         ipv4_address: 172.30.30.201
+
+  box6: 
+    container_name: box6
+    image: vulhub/flask:1.1.1
+    volumes:
+      - /root/src/box6/app:/app
+    ports:
+      - "8011:8000"
+    networks:
+       vulnerable_net:
+         ipv4_address: 172.30.30.202
+
+
+  box7:
+    container_name: box7
+    image: vulhub/fastjson:1.2.45
+    ports:
+      - "8090:8090"
+    networks:
+       vulnerable_net:
+         ipv4_address: 172.30.30.205
+
+  box8: 
+    container_name: box8
+    image: newnc1234
+    ports: 
+      - "1234:1234"
+    networks:
+       vulnerable_net:
+         ipv4_address: 172.30.30.206
+
+  box9:
+    container_name: box9
+    image: newnc4763
+    ports:
+      - "4763:4763"
+    networks:
+       vulnerable_net:
+         ipv4_address: 172.30.30.211
+
+networks:
+  vulnerable_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.30.0/24
+          gateway: 172.30.30.1
